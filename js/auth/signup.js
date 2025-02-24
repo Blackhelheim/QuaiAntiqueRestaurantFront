@@ -6,6 +6,7 @@ const inputMail = document.getElementById("EmailInput");
 const inputPassword = document.getElementById("PasswordInput");
 const inputValidationPassword = document.getElementById("ValidatePasswordInput");
 const btnValidation = document.getElementById("btn-validation-inscription");
+const formInscription = document.getElementById("formulaireInscription");
 
 inputNom.addEventListener("keyup", validateForm); 
 inputPreNom.addEventListener("keyup", validateForm);
@@ -89,28 +90,44 @@ function validateRequired(input){
     }
 }
 
+// ... (votre code de validation reste inchangé)
+
 function InscrireUtilisateur(){
+    let dataForm = new FormData(formInscription);
+
+
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    // Ajoutez l'en-tête Access-Control-Allow-Origin
-    myHeaders.append("Access-Control-Allow-Origin", "http://127.0.0.1:8000"); 
+ 
 
     let raw = JSON.stringify({
-    "firstName": "Test fetsh",
-    "lastName": "test test fetsh",
-     "email": "testdepuisQuaiAntiqueNvo@email.com",
-    "password": "Azerty11"
+        "firstName": dataForm.get("Nom"),
+        "lastName": dataForm.get("Prenom"),
+        "email": dataForm.get("Email"),
+        "password": dataForm.get("mdp")
     });
 
     let requestOptions = {
-     method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
     };
 
-    fetch("http://127.0.0.1:8000/api/registration", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
+    fetch(apiUrl+"registration", requestOptions)
+    .then(response => {
+        if(response.ok){
+            return response.json();
+         }
+        else{
+            alert("Erreur lors de l'inscription");
+        }
+    })
+    .then(result => {
+        alert("Bravo "+dataForm.get("Prenom")+", vous êtes maintenant inscrit, vous pouvez vous connecter.");
+        document.location.href="/signin";
+    })
+            
+    .catch(error => console.error('error', error));
 }
+
